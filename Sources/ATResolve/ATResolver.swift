@@ -54,16 +54,26 @@ public struct ATResolver<Provider: ResponseProviding> {
 		if name.hasSuffix(".bsky.social") {
 			return nil
 		}
-		
-		let resolver = try AsyncDNSResolver()
-		
-		let txtRecords = try await resolver.queryTXT(name: "_atproto." + name)
-		
-		let didRecord = txtRecords.first { record in
-			record.txt.hasPrefix("did=")
+
+		do {
+			// First, check if there is a /.well-known/atproto-did endpoint
+			var atprotoWellKnown = URLComponents()
+			atprotoWellKnown.scheme = "https"
+			atprotoWellKnown.host = name
+			atprotoWellKnown.path = "/.well-known/atproto-did"
+			guard let url = atprotoWellKnown.url?.absoluteString else {
+				throw URLError(.badURL)
+			}
+			return try await provider.decodeJSON(at: url)
+		} catch {
+			// If that doesn't exist, check for a DNS TXT record (slower)
+			let resolver = try AsyncDNSResolver()
+			let txtRecords = try await resolver.queryTXT(name: "_atproto." + name)
+			let didRecord = txtRecords.first { record in
+				record.txt.hasPrefix("did=")
+			}
+			return didRecord?.txt.components(separatedBy: "=").last
 		}
-		
-		return didRecord?.txt.components(separatedBy: "=").last
 	}
 	
 	public func didForHandle(_ handle: String) async throws -> String? {
