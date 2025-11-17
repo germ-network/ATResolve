@@ -51,10 +51,14 @@ public struct ATResolver<Requester: HTTPSRequester> {
 			atprotoWellKnown.scheme = "https"
 			atprotoWellKnown.host = name
 			atprotoWellKnown.path = "/.well-known/atproto-did"
-			guard let url = atprotoWellKnown.url?.absoluteString else {
+			guard let url = atprotoWellKnown.url else {
 				throw URLError(.badURL)
 			}
-			return try await provider.decodeJSON(at: url)
+			var request = URLRequest(url: url)
+			request.httpMethod = "GET"
+			request.addValue("text/plain;charset=UTF-8", forHTTPHeaderField: "Accept")
+			let (data, resp) = try await URLSession.shared.data(for: request)
+			return String(data: data, encoding: .utf8)
 		} catch {
 			// If that doesn't exist, check for a DNS TXT record (slower)
 			let resolver = try AsyncDNSResolver()
