@@ -68,6 +68,11 @@ public struct ATResolver<Provider: ResponseProviding> {
 			request.httpMethod = "GET"
 			request.addValue("text/plain;charset=UTF-8", forHTTPHeaderField: "Accept")
 			let (data, resp) = try await URLSession.shared.data(for: request)
+			guard let httpResp = resp as? HTTPURLResponse,
+				  httpResp.statusCode == 200 else
+			{
+				throw URLError(.badServerResponse)
+			}
 			return String(data: data, encoding: .utf8)
 		} catch {
 			// If that doesn't exist, check for a DNS TXT record (slower)
