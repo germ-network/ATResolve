@@ -11,6 +11,7 @@ import AsyncHTTPClient
 //should be CoreFoundation, for Data type
 import Foundation
 import NIOHTTP1
+import NIOCore
 
 extension ATResolve.HTTPMethod {
 	var convert: NIOHTTP1.HTTPMethod {

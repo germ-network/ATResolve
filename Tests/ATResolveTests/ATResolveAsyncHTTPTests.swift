@@ -6,9 +6,9 @@
 //
 
 #if canImport(AsyncHTTPClient)
+import AsyncHTTPClient
 import ATResolve
 import Foundation
-import AsyncHTTPClient
 import Testing
 
 //Test API with AsyncHTTPClient
