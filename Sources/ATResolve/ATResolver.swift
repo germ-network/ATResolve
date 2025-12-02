@@ -32,21 +32,11 @@ public struct PLCDirectoryResolveDidResponse: Codable, Hashable, Sendable {
 	}
 }
 
-public protocol ResponseProviding {
-	func decodeJSON<T: Decodable>(at urlString: String, queryItems: [(String, String)]) async throws -> T
-}
+public struct ATResolver<Requester: HTTPSRequester> {
+	public let requester: Requester
 
-extension ResponseProviding {
-	public func decodeJSON<T: Decodable>(at urlString: String) async throws -> T {
-		try await decodeJSON(at: urlString, queryItems: [])
-	}
-}
-
-public struct ATResolver<Provider: ResponseProviding> {
-	public let provider: Provider
-
-	public init(provider: Provider) {
-		self.provider = provider
+	public init(requester: Requester) {
+		self.requester = requester
 	}
 	
 	public func didForDomain(_ name: String) async throws -> String? {
@@ -75,15 +65,21 @@ public struct ATResolver<Provider: ResponseProviding> {
 	}
 	
 	public func blueskyGetProfile(_ actor: String) async throws -> BlueskyProfile {
-		try await provider.decodeJSON(
-			at: "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile",
+		try await requester.decodeJSON(
+			host: "public.api.bsky.app",
+			path: "/xrpc/app.bsky.actor.getProfile",
+			headers: ["Accept": "application/json"],
 			queryItems: [("actor", actor)]
 		)
 	}
 	
-	public func plcDirectoryQuery(_ did: String) async throws -> PLCDirectoryResolveDidResponse {
-		try await provider.decodeJSON(
-			at: "https://plc.directory/\(did)"
+	public func plcDirectoryQuery(
+		_ did: String
+	) async throws -> PLCDirectoryResolveDidResponse {
+		try await requester.decodeJSON(
+			host: "plc.directory",
+			path: "/\(did)",
+			headers: ["Accept": "application/json"]
 		)
 	}
 	
@@ -99,7 +95,7 @@ public struct ATResolver<Provider: ResponseProviding> {
 	}
 }
 
-extension ATResolver: Sendable where Provider: Sendable {}
+extension ATResolver: Sendable where Requester: Sendable {}
 
 #if canImport(Foundation)
 import Foundation
