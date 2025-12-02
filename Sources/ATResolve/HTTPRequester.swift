@@ -21,11 +21,11 @@ public struct HTTPMethod: Hashable, Sendable {
 }
 
 public struct GenericHTTPSComponents {
-	let host: String
-	let path: String
-	let method: HTTPMethod
-	let headers: [String: String]
-	let queryItems: [(String, String?)]
+	public let host: String
+	public let path: String
+	public let method: HTTPMethod
+	public let headers: [String: String]
+	public let queryItems: [(String, String?)]
 }
 
 public protocol HTTPSRequester {
