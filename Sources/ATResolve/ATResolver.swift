@@ -47,23 +47,16 @@ public struct ATResolver<Requester: HTTPSRequester> {
 
 		do {
 			// First, check if there is a /.well-known/atproto-did endpoint
-			var atprotoWellKnown = URLComponents()
-			atprotoWellKnown.scheme = "https"
-			atprotoWellKnown.host = name
-			atprotoWellKnown.path = "/.well-known/atproto-did"
-			guard let url = atprotoWellKnown.url else {
-				throw URLError(.badURL)
-			}
-			var request = URLRequest(url: url)
-			request.httpMethod = "GET"
-			request.addValue("text/plain;charset=UTF-8", forHTTPHeaderField: "Accept")
-			let (data, resp) = try await URLSession.shared.data(for: request)
-			guard let httpResp = resp as? HTTPURLResponse,
-				  httpResp.statusCode == 200 else
-			{
-				throw URLError(.badServerResponse)
-			}
-			return String(data: data, encoding: .utf8)
+			let dataResult = try await requester.request(
+				parameters: .init(
+					host: name,
+					path: "/.well-known/atproto-did",
+					method: .get,
+					headers: ["Accept": "text/plain;charset=UTF-8"],
+					queryItems: []
+				)
+			)
+			return String(data: dataResult, encoding: .utf8)
 		} catch {
 			// If that doesn't exist, check for a DNS TXT record (slower)
 			let resolver = try AsyncDNSResolver()
