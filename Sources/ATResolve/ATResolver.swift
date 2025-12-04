@@ -57,6 +57,7 @@ public struct ATResolver<Requester: HTTPSRequester> {
 			
 			let first = await group.next()
 			if let first {
+				group.cancelAll()
 				return first
 			}
 			
