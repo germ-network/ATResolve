@@ -28,7 +28,7 @@ public struct GenericHTTPSComponents {
 	public let queryItems: [(String, String?)]
 }
 
-public protocol HTTPSRequester {
+public protocol HTTPSRequester: Sendable {
 	func request(parameters: GenericHTTPSComponents) async throws -> Data
 }
 
