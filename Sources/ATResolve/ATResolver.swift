@@ -45,28 +45,66 @@ public struct ATResolver<Requester: HTTPSRequester> {
 			return nil
 		}
 
+		return await withTaskGroup(of: Optional<String>.self) { group in
+			let requester = requester
+			group.addTask {
+				await Self.checkWellKnown(handle: name, requester: requester)
+			}
+			
+			group.addTask {
+				await Self.checkDNS(handle: name)
+			}
+			
+			let first = await group.next()
+			if let first {
+				return first
+			}
+			
+			return await group.next() ?? nil
+		}
+	}
+	
+	static func checkWellKnown(handle: String, requester: Requester) async -> String? {
 		do {
-			// First, check if there is a /.well-known/atproto-did endpoint
 			let dataResult = try await requester.request(
 				parameters: .init(
-					host: name,
+					host: handle,
 					path: "/.well-known/atproto-did",
 					method: .get,
 					headers: ["Accept": "text/plain;charset=UTF-8"],
 					queryItems: []
 				)
 			)
-			return String(data: dataResult, encoding: .utf8)
+			let result = String(data: dataResult, encoding: .utf8)
+			
+			if let result {
+				//workaround if we get erroneous 200 code but body return is e.g.
+				//"404 error"
+				guard result.hasPrefix("did:") else {
+					return nil
+				}
+			}
+			return result
 		} catch {
-			// If that doesn't exist, check for a DNS TXT record (slower)
+			return nil
+		}
+	}
+	
+	static func checkDNS(handle: String) async -> String? {
+		do {
 			let resolver = try AsyncDNSResolver()
-			let txtRecords = try await resolver.queryTXT(name: "_atproto." + name)
+			let txtRecords = try await resolver.queryTXT(
+				name: "_atproto." + handle
+			)
 			let didRecord = txtRecords.first { record in
 				record.txt.hasPrefix("did=")
 			}
 			return didRecord?.txt.components(separatedBy: "=").last
+		} catch {
+			return nil
 		}
 	}
+	
 	
 	public func didForHandle(_ handle: String) async throws -> String? {
 		if let did = try await didForDomain(handle) {
