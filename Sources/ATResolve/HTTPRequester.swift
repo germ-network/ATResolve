@@ -20,7 +20,7 @@ public struct HTTPMethod: Hashable, Sendable {
 	public let rawValue: String
 }
 
-public struct GenericHTTPSComponents {
+public struct Request {
 	public let host: String
 	public let path: String
 	public let method: HTTPMethod
@@ -29,7 +29,7 @@ public struct GenericHTTPSComponents {
 }
 
 public protocol HTTPSRequester {
-	func request(parameters: GenericHTTPSComponents) async throws -> Data
+	func request(parameters: Request) async throws -> Data
 }
 
 extension HTTPSRequester {

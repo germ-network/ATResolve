@@ -34,7 +34,7 @@ extension ATResolve.HTTPMethod {
 
 extension HTTPClient: HTTPSRequester {
 	public func request(
-		parameters: ATResolve.GenericHTTPSComponents
+		parameters: ATResolve.Request
 	) async throws -> Data {
 		var components = URLComponents()
 		components.scheme = "https"

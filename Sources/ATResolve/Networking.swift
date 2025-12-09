@@ -5,7 +5,7 @@ import FoundationNetworking
 #endif
 
 extension URLSession: HTTPSRequester {
-	public func request(parameters: GenericHTTPSComponents) async throws -> Data {
+	public func request(parameters: Request) async throws -> Data {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = parameters.host
