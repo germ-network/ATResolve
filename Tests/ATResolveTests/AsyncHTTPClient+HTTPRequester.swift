@@ -32,15 +32,15 @@ extension ATResolve.HTTPMethod {
 	}
 }
 
-extension HTTPClient: HTTPSRequester {
-	public func request(
-		parameters: ATResolve.Request
+extension HTTPClient: ResponseProviding {
+	public func data(
+		for request: ATResolve.Request
 	) async throws -> Data {
 		var components = URLComponents()
 		components.scheme = "https"
-		components.host = parameters.host
-		components.path = parameters.path
-		components.queryItems = parameters.queryItems.map({ pair in
+		components.host = request.host
+		components.path = request.path
+		components.queryItems = request.queryItems.map({ pair in
 			URLQueryItem(name: pair.0, value: pair.1)
 		})
 		
@@ -48,10 +48,10 @@ extension HTTPClient: HTTPSRequester {
 			throw URLError(.badURL)
 		}
 		
-		var request = HTTPClientRequest(url: url.absoluteString)
-		request.method = try parameters.method.convert
+		var httpRequest = HTTPClientRequest(url: url.absoluteString)
+		httpRequest.method = try request.method.convert
 		
-		let response = try await execute(request, timeout: .seconds(30))
+		let response = try await execute(httpRequest, timeout: .seconds(30))
 		var body = try await response.body.collect(upTo: 1024 * 1024)
 		
 		guard response.status == .ok else {

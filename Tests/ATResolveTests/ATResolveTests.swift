@@ -44,12 +44,12 @@ struct ATResolveTests {
 	}
 
 	@Test func decodeWithCustomProvider() async throws {
-		struct CustomProvider: HTTPSRequester {
+		struct CustomProvider: ResponseProviding {
 			let content = """
 	{"@context":["https://www.w3.org/ns/did/v1","https://w3id.org/security/multikey/v1","https://w3id.org/security/suites/secp256k1-2019/v1"],"id":"did:plc:klsh7edzj3jmxucibyjqstb3","alsoKnownAs":["at://massicotte.org"],"verificationMethod":[{"id":"did:plc:klsh7edzj3jmxucibyjqstb3#atproto","type":"Multikey","controller":"did:plc:klsh7edzj3jmxucibyjqstb3","publicKeyMultibase":"zQ3shP3NvazgSaEFpryzuyx8Q4MHho2KC2MNobAuQX3gdKAPW"}],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://milkcap.us-west.host.bsky.network"}]}
 """
 
-			func request(parameters: Request) async throws -> Data {
+			func data(for: Request) async throws -> Data {
 				Data(content.utf8)
 			}
 		}

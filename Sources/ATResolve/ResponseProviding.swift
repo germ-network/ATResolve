@@ -1,5 +1,5 @@
 //
-//  HTTPRequester.swift
+//  ResponseProviding.swift
 //  ATResolve
 //
 //  Created by Mark @ Germ on 12/1/25.
@@ -28,11 +28,11 @@ public struct Request {
 	public let queryItems: [(String, String?)]
 }
 
-public protocol HTTPSRequester {
-	func request(parameters: Request) async throws -> Data
+public protocol ResponseProviding {
+	func data(for: Request) async throws -> Data
 }
 
-extension HTTPSRequester {
+extension ResponseProviding {
 	func decodeJSON<T: Decodable>(
 		host: String,
 		path: String,
@@ -40,8 +40,8 @@ extension HTTPSRequester {
 		headers: [String: String] = [:],
 		queryItems: [(String, String)] = []
 	) async throws -> T {
-		let result = try await request(
-			parameters: .init(
+		let result = try await data(
+			for: .init(
 				host: host,
 				path: path,
 				method: method,

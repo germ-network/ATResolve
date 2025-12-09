@@ -4,26 +4,26 @@ import Foundation
 import FoundationNetworking
 #endif
 
-extension URLSession: HTTPSRequester {
-	public func request(parameters: Request) async throws -> Data {
+extension URLSession: ResponseProviding {
+	public func data(for request: Request) async throws -> Data {
 		var components = URLComponents()
 		components.scheme = "https"
-		components.host = parameters.host
-		components.path = parameters.path
-		components.queryItems = parameters.queryItems.map({ pair in
+		components.host = request.host
+		components.path = request.path
+		components.queryItems = request.queryItems.map({ pair in
 			URLQueryItem(name: pair.0, value: pair.1)
 		})
 		
 		guard let url = components.url else {
 			throw URLError(.badURL)
 		}
-		var request = URLRequest(url: url)
-		request.httpMethod = parameters.method.rawValue
-		for (key, value) in parameters.headers {
-			request.addValue(value, forHTTPHeaderField: key)
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = request.method.rawValue
+		for (key, value) in request.headers {
+			urlRequest.addValue(value, forHTTPHeaderField: key)
 		}
-		request.addValue("text/plain;charset=UTF-8", forHTTPHeaderField: "Accept")
-		let (data, response) = try await URLSession.shared.data(for: request)
+		urlRequest.addValue("text/plain;charset=UTF-8", forHTTPHeaderField: "Accept")
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
 		guard
 			let httpResponse = response as? HTTPURLResponse,
