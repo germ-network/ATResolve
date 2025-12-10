@@ -20,7 +20,7 @@ public struct HTTPMethod: Hashable, Sendable {
 	public let rawValue: String
 }
 
-public struct Request {
+public struct Request: Sendable {
 	public let host: String
 	public let path: String
 	public let method: HTTPMethod

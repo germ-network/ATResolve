@@ -32,11 +32,11 @@ public struct PLCDirectoryResolveDidResponse: Codable, Hashable, Sendable {
 	}
 }
 
-public struct ATResolver<Requester: ResponseProviding> {
-	public let requester: Requester
+public struct ATResolver<Provider: ResponseProviding> {
+	public let provider: Provider
 
-	public init(requester: Requester) {
-		self.requester = requester
+	public init(provider: Provider) {
+		self.provider = provider
 	}
 	
 	public func didForDomain(_ name: String) async throws -> String? {
@@ -65,7 +65,7 @@ public struct ATResolver<Requester: ResponseProviding> {
 	}
 	
 	public func blueskyGetProfile(_ actor: String) async throws -> BlueskyProfile {
-		try await requester.decodeJSON(
+		try await provider.decodeJSON(
 			host: "public.api.bsky.app",
 			path: "/xrpc/app.bsky.actor.getProfile",
 			headers: ["Accept": "application/json"],
@@ -76,7 +76,7 @@ public struct ATResolver<Requester: ResponseProviding> {
 	public func plcDirectoryQuery(
 		_ did: String
 	) async throws -> PLCDirectoryResolveDidResponse {
-		try await requester.decodeJSON(
+		try await provider.decodeJSON(
 			host: "plc.directory",
 			path: "/\(did)",
 			headers: ["Accept": "application/json"]
@@ -95,7 +95,7 @@ public struct ATResolver<Requester: ResponseProviding> {
 	}
 }
 
-extension ATResolver: Sendable where Requester: Sendable {}
+extension ATResolver: Sendable where Provider: Sendable {}
 
 #if canImport(Foundation)
 import Foundation

@@ -8,7 +8,7 @@ import FoundationNetworking
 struct ATResolveTests {
 	@Test
 	func resolveHandle() async throws {
-		let resolver = ATResolver(requester: URLSession.shared)
+		let resolver = ATResolver(provider: URLSession.shared)
 
 		let data = try await resolver.resolveHandle("massicotte.org")
 		
@@ -19,7 +19,7 @@ struct ATResolveTests {
 	
 	@Test
 	func didForDomain() async throws {
-		let resolver = ATResolver(requester: URLSession.shared)
+		let resolver = ATResolver(provider: URLSession.shared)
 
 		let did = try await resolver.didForDomain("massicotte.org")
 		
@@ -28,7 +28,7 @@ struct ATResolveTests {
 	
 	@Test
 	func blueskyGetProfile() async throws {
-		let resolver = ATResolver(requester: URLSession.shared)
+		let resolver = ATResolver(provider: URLSession.shared)
 
 		let profile = try await resolver.blueskyGetProfile("massicotte.org")
 		
@@ -36,7 +36,7 @@ struct ATResolveTests {
 	}
 	
 	@Test func bskySocialHandle() async throws {
-		let resolver = ATResolver(requester: URLSession.shared)
+		let resolver = ATResolver(provider: URLSession.shared)
 
 		let profile = try await resolver.resolveHandle("cjrdev.bsky.social")
 		
@@ -54,8 +54,8 @@ struct ATResolveTests {
 			}
 		}
 
-		let resolver = ATResolver(requester: CustomProvider())
-		
+		let resolver = ATResolver(provider: CustomProvider())
+
 		let response = try await resolver.plcDirectoryQuery("did:plc:klsh7edzj3jmxucibyjqstb3")
 		
 		#expect(response.pds?.serviceEndpoint == "https://milkcap.us-west.host.bsky.network")
