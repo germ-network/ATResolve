@@ -18,14 +18,18 @@ let package = Package(
 			targets: ["ATResolve"]),
 	],
 	dependencies: [
-		.package(url: "https://github.com/apple/swift-async-dns-resolver.git", from: "0.4.0")
+		.package(url: "https://github.com/apple/swift-async-dns-resolver.git", from: "0.4.0"),
 	],
 	targets: [
 		.target(
 			name: "ATResolve",
 			dependencies: [
-				.product(name: "AsyncDNSResolver", package: "swift-async-dns-resolver"),
-			]),
+				.product(
+					name: "AsyncDNSResolver",
+					package: "swift-async-dns-resolver"
+				),
+			]
+		),
 		.testTarget(
 			name: "ATResolveTests",
 			dependencies: ["ATResolve"]

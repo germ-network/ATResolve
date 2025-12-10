@@ -1,5 +1,5 @@
 {
-  "originHash" : "79772beb13b2d5e9ae03d91ea73aefd861946eb487105353f86977b6c2920fa2",
+  "originHash" : "96e0d45ae443bfd2b83137c042febcda2762013a24905f862d8634380a95d3c6",
   "pins" : [
     {
       "identity" : "swift-async-dns-resolver",
