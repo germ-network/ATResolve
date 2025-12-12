@@ -40,20 +40,64 @@ public struct ATResolver<Provider: ResponseProviding> {
 	}
 	
 	public func didForDomain(_ name: String) async throws -> String? {
-		// I don't understand exactly why, but this triggers a timeout. When I do it with `dig` it returns right away...
-		if name.hasSuffix(".bsky.social") {
+		return await withTaskGroup(of: Optional<String>.self) { group in
+			let provider = provider
+			group.addTask {
+				await Self.checkWellKnown(handle: name, provider: provider)
+			}
+			
+			group.addTask {
+				await Self.checkDNS(handle: name)
+			}
+			
+			let first = await group.next()
+			if let first {
+				return first
+			}
+			
+			return await group.next() ?? nil
+		}
+	}
+	
+	static func checkWellKnown(handle: String, provider: Provider) async -> String? {
+		do {
+			let dataResult = try await provider.data(
+				for: .init(
+					host: handle,
+					path: "/.well-known/atproto-did",
+					method: .get,
+					headers: ["Accept": "text/plain;charset=UTF-8"],
+					queryItems: []
+				)
+			)
+			let result = String(data: dataResult, encoding: .utf8)
+
+			if let result {
+				//workaround if we get erroneous 200 code but body return is e.g.
+				//"404 error"
+				guard result.hasPrefix("did:") else {
+					return nil
+				}
+			}
+			return result
+		} catch {
 			return nil
 		}
-		
-		let resolver = try AsyncDNSResolver()
-		
-		let txtRecords = try await resolver.queryTXT(name: "_atproto." + name)
-		
-		let didRecord = txtRecords.first { record in
-			record.txt.hasPrefix("did=")
+	}
+
+	static func checkDNS(handle: String) async -> String? {
+		do {
+			let resolver = try AsyncDNSResolver()
+			let txtRecords = try await resolver.queryTXT(
+				name: "_atproto." + handle
+			)
+			let didRecord = txtRecords.first { record in
+				record.txt.hasPrefix("did=")
+			}
+			return didRecord?.txt.components(separatedBy: "=").last
+		} catch {
+			return nil
 		}
-		
-		return didRecord?.txt.components(separatedBy: "=").last
 	}
 	
 	public func didForHandle(_ handle: String) async throws -> String? {
