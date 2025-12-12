@@ -28,7 +28,7 @@ public struct Request: Sendable {
 	public let queryItems: [(String, String?)]
 }
 
-public protocol ResponseProviding {
+public protocol ResponseProviding: Sendable {
 	func data(for: Request) async throws -> Data
 }
 
