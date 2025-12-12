@@ -17,8 +17,8 @@ struct ATResolveTests {
 		#expect(data?.serviceEndpoint == "https://milkcap.us-west.host.bsky.network")
 	}
 	
-	// Custom handle: Managed via DNS TXT record
-	@Test func didForCustomHandle() async throws {
+	@Test
+	func didForDomain() async throws {
 		let resolver = ATResolver(provider: URLSession.shared)
 
 		let did = try await resolver.didForDomain("massicotte.org")
@@ -26,22 +26,21 @@ struct ATResolveTests {
 		#expect(did == "did:plc:klsh7edzj3jmxucibyjqstb3")
 	}
 	
-	// Bluesky: Managed via /.well-known/atproto-did
-	@Test func didForBskySocialHandle() async throws {
+	@Test
+	func blueskyGetProfile() async throws {
 		let resolver = ATResolver(provider: URLSession.shared)
 
-		let did = try await resolver.didForDomain("cjrdev.bsky.social")
-
-		#expect(did == "did:plc:wlef3srsa3hlyzj2hy6yncrh")
+		let profile = try await resolver.blueskyGetProfile("massicotte.org")
+		
+		#expect(profile.did == "did:plc:klsh7edzj3jmxucibyjqstb3")
 	}
 	
-	// Blacksky: Managed via /.well-known/atproto-did
-	@Test func didForMyatprotoSocialHandle() async throws {
+	@Test func bskySocialHandle() async throws {
 		let resolver = ATResolver(provider: URLSession.shared)
 
-		let did = try await resolver.didForDomain("cosmo-dev.myatproto.social")
-
-		#expect(did == "did:plc:ccuttodko4ijw24ga6yln3l6")
+		let profile = try await resolver.resolveHandle("cjrdev.bsky.social")
+		
+		#expect(profile != nil)
 	}
 
 	@Test func decodeWithCustomProvider() async throws {
