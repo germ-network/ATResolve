@@ -101,20 +101,7 @@ public struct ATResolver<Provider: ResponseProviding> {
 	}
 	
 	public func didForHandle(_ handle: String) async throws -> String? {
-		if let did = try await didForDomain(handle) {
-			return did
-		}
-		
-		return try await blueskyGetProfile(handle).did
-	}
-	
-	public func blueskyGetProfile(_ actor: String) async throws -> BlueskyProfile {
-		try await provider.decodeJSON(
-			host: "public.api.bsky.app",
-			path: "/xrpc/app.bsky.actor.getProfile",
-			headers: ["Accept": "application/json"],
-			queryItems: [("actor", actor)]
-		)
+		try await didForDomain(handle)
 	}
 	
 	public func plcDirectoryQuery(
