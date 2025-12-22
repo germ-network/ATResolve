@@ -42,6 +42,27 @@ struct ATResolveTests {
 		
 		#expect(profile != nil)
 	}
+	
+	@Test
+	func timedTestWellKnownTimeout() async throws {
+		// The /.well-known endpoint times out for @thisismissem.social
+		// It should time out after 3 seconds, so this test should be ~3 seconds
+		try await timedTest {
+			let resolver = ATResolver(provider: URLSession.shared)
+			let profile = try await resolver.resolveHandle("thisismissem.social")
+			#expect(profile?.did == "did:plc:5w4eqcxzw5jv5qfnmzxcakfy")
+		}
+	}
+	
+	@Test
+	func timedTestDNSTimeout() async throws {
+		// DNS should time out for any .bsky.social handle
+		try await timedTest {
+			let resolver = ATResolver(provider: URLSession.shared)
+			let profile = try await resolver.resolveHandle("cjrdev.bsky.social")
+			#expect(profile?.did == "did:plc:wlef3srsa3hlyzj2hy6yncrh")
+		}
+	}
 
 	@Test func decodeWithCustomProvider() async throws {
 		struct CustomProvider: ResponseProviding {
@@ -59,5 +80,12 @@ struct ATResolveTests {
 		let response = try await resolver.plcDirectoryQuery("did:plc:klsh7edzj3jmxucibyjqstb3")
 		
 		#expect(response.pds?.serviceEndpoint == "https://milkcap.us-west.host.bsky.network")
+	}
+	
+	private func timedTest(_ test: () async throws  -> ()) async throws {
+		let start = CFAbsoluteTimeGetCurrent()
+		try await test()
+		let diff = CFAbsoluteTimeGetCurrent() - start
+		print("This test took \(diff) seconds")
 	}
 }

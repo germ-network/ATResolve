@@ -87,7 +87,12 @@ public struct ATResolver<Provider: ResponseProviding> {
 
 	static func checkDNS(handle: String) async -> String? {
 		do {
-			let resolver = try AsyncDNSResolver()
+			var dnsOptions = CAresDNSResolver.Options.default
+			dnsOptions.attempts = 1
+			dnsOptions.timeoutMillis = 3000
+			// Cloudflare and Google DNS servers
+			dnsOptions.servers = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
+			let resolver = try AsyncDNSResolver(options: dnsOptions)
 			let txtRecords = try await resolver.queryTXT(
 				name: "_atproto." + handle
 			)
