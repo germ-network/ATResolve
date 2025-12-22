@@ -142,8 +142,6 @@ public struct ATResolver<Provider: ResponseProviding> {
 	}
 }
 
-extension ATResolver: Sendable where Provider: Sendable {}
-
 #if canImport(Foundation)
 import Foundation
 
