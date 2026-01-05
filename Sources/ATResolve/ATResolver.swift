@@ -87,7 +87,10 @@ public struct ATResolver<Provider: ResponseProviding> {
 
 	static func checkDNS(handle: String) async -> String? {
 		do {
-			let resolver = try AsyncDNSResolver()
+			// Only check Cloudflare and Google DNS servers
+			var dnsOptions = CAresDNSResolver.Options.default
+			dnsOptions.servers = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
+			let resolver = try AsyncDNSResolver(options: dnsOptions)
 			let txtRecords = try await resolver.queryTXT(
 				name: "_atproto." + handle
 			)
@@ -138,8 +141,6 @@ public struct ATResolver<Provider: ResponseProviding> {
 		return ResolvedData(did: did, handle: handle, serviceEndpoint: directoryResult.pds?.serviceEndpoint)
 	}
 }
-
-extension ATResolver: Sendable where Provider: Sendable {}
 
 #if canImport(Foundation)
 import Foundation

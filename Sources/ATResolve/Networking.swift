@@ -18,6 +18,7 @@ extension URLSession: ResponseProviding {
 			throw URLError(.badURL)
 		}
 		var urlRequest = URLRequest(url: url)
+		urlRequest.timeoutInterval = 3
 		urlRequest.httpMethod = request.method.rawValue
 		for (key, value) in request.headers {
 			urlRequest.addValue(value, forHTTPHeaderField: key)
