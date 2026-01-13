@@ -10,9 +10,11 @@ extension URLSession: ResponseProviding {
 		components.scheme = "https"
 		components.host = request.host
 		components.path = request.path
-		components.queryItems = request.queryItems.map({ pair in
-			URLQueryItem(name: pair.0, value: pair.1)
-		})
+		if !request.queryItems.isEmpty {
+			components.queryItems = request.queryItems.map({ pair in
+				URLQueryItem(name: pair.0, value: pair.1)
+			})
+		}
 		
 		guard let url = components.url else {
 			throw URLError(.badURL)
