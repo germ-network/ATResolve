@@ -51,8 +51,9 @@ public struct ATResolver<Provider: ResponseProviding> {
 			}
 			
 			let first = await group.next()
-			if let first {
-				return first
+			//unwrap Double Optional
+			if let inner = first, let result: String = inner {
+				return result
 			}
 			
 			return await group.next() ?? nil
