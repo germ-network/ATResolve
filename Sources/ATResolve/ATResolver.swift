@@ -77,6 +77,10 @@ public struct ATResolver<Provider: ResponseProviding> {
 				//workaround if we get erroneous 200 code but body return is e.g.
 				//"404 error"
 				guard result.hasPrefix("did:") else {
+					ATResolveLogger.log(
+						"rejecting well-known result that is not a did",
+						component: "ATResolver"
+					)
 					return nil
 				}
 			}
