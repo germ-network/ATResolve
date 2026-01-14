@@ -43,6 +43,14 @@ struct ATResolveTests {
 		#expect(profile != nil)
 	}
 	
+	@Test func germDevEnv() async throws {
+		let resolver = ATResolver(provider: URLSession.shared)
+
+		let profile = try await resolver.resolveHandle("emelia.pds.germnetwork.net")
+		
+		#expect(profile != nil)
+	}
+	
 	@Test
 	func timedTestWellKnownTimeout() async throws {
 		// The /.well-known endpoint times out for @thisismissem.social
