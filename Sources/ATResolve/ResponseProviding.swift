@@ -29,10 +29,6 @@ public struct Request: Sendable {
 	public let queryItems: [(String, String?)]
 }
 
-public protocol ResponseProviding: Sendable {
-	func data(for: Request) async throws -> Data
-}
-
 extension HTTPFetcher {
 	func decodeJSON<T: Decodable>(
 		host: String,
