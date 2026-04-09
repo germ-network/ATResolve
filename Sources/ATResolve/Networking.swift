@@ -3,8 +3,9 @@ import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
+import GermConvenience
 
-extension URLSession: ResponseProviding {
+extension HTTPFetcher {
 	public func data(for request: Request) async throws -> Data {
 		var components = URLComponents()
 		components.scheme = "https"

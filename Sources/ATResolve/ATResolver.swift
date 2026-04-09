@@ -1,4 +1,5 @@
 import AsyncDNSResolver
+import GermConvenience
 
 enum ATResolverError: Error {
 	case urlInvalid
@@ -32,10 +33,10 @@ public struct PLCDirectoryResolveDidResponse: Codable, Hashable, Sendable {
 	}
 }
 
-public struct ATResolver<Provider: ResponseProviding> {
-	public let provider: Provider
+public struct ATResolver: Sendable {
+	public let provider: HTTPFetcher
 
-	public init(provider: Provider) {
+	public init(provider: HTTPFetcher) {
 		self.provider = provider
 	}
 	
@@ -60,7 +61,7 @@ public struct ATResolver<Provider: ResponseProviding> {
 		}
 	}
 	
-	static func checkWellKnown(handle: String, provider: Provider) async -> String? {
+	static func checkWellKnown(handle: String, provider: HTTPFetcher) async -> String? {
 		do {
 			let dataResult = try await provider.data(
 				for: .init(
