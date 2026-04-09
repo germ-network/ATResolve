@@ -33,7 +33,7 @@ public struct PLCDirectoryResolveDidResponse: Codable, Hashable, Sendable {
 	}
 }
 
-public struct ATResolver<Provider: HTTPFetcher> {
+public struct ATResolver {
 	public let provider: HTTPFetcher
 
 	public init(provider: HTTPFetcher) {
