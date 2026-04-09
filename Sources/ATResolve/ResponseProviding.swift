@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GermConvenience
 
 ///Allows the client to choose between URLSession (Foundation) or AsyncHTTPClient,
 ///Or another networking library of their choice
@@ -32,7 +33,7 @@ public protocol ResponseProviding: Sendable {
 	func data(for: Request) async throws -> Data
 }
 
-extension ResponseProviding {
+extension HTTPFetcher {
 	func decodeJSON<T: Decodable>(
 		host: String,
 		path: String,
