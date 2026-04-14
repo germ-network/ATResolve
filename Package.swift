@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
 	name: "ATResolve",
 	platforms: [
-		.macOS(.v10_15),
+		.macOS(.v12),
 		.macCatalyst(.v13),
 		.iOS(.v15),
 		.tvOS(.v13),
