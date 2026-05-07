@@ -13,9 +13,9 @@ struct ATResolveTests {
 
 		let data = try await resolver.resolveHandle("massicotte.org")
 		
-		#expect(data?.did == "did:plc:klsh7edzj3jmxucibyjqstb3")
-		#expect(data?.handle == "massicotte.org")
-		#expect(data?.serviceEndpoint == "https://milkcap.us-west.host.bsky.network")
+		#expect(data.did == "did:plc:klsh7edzj3jmxucibyjqstb3")
+		#expect(data.handle == "massicotte.org")
+		#expect(data.serviceEndpoint == "https://milkcap.us-west.host.bsky.network")
 	}
 	
 	@Test
@@ -41,7 +41,7 @@ struct ATResolveTests {
 
 		let profile = try await resolver.resolveHandle("cjrdev.bsky.social")
 		
-		#expect(profile != nil)
+		#expect(profile.did == "did:plc:wlef3srsa3hlyzj2hy6yncrh")
 	}
 	
 	@Test func germDevEnv() async throws {
@@ -49,7 +49,7 @@ struct ATResolveTests {
 
 		let profile = try await resolver.resolveHandle("emelia.pds.germnetwork.net")
 		
-		#expect(profile != nil)
+		#expect(profile.did == "did:plc:mkropy53rasdqrmdrf3hvyyj")
 	}
 	
 	@Test
@@ -59,7 +59,7 @@ struct ATResolveTests {
 		try await timedTest {
 			let resolver = ATResolver(provider: URLSession.shared)
 			let profile = try await resolver.resolveHandle("thisismissem.social")
-			#expect(profile?.did == "did:plc:5w4eqcxzw5jv5qfnmzxcakfy")
+			#expect(profile.did == "did:plc:5w4eqcxzw5jv5qfnmzxcakfy")
 		}
 	}
 	
@@ -69,7 +69,7 @@ struct ATResolveTests {
 		try await timedTest {
 			let resolver = ATResolver(provider: URLSession.shared)
 			let profile = try await resolver.resolveHandle("cjrdev.bsky.social")
-			#expect(profile?.did == "did:plc:wlef3srsa3hlyzj2hy6yncrh")
+			#expect(profile.did == "did:plc:wlef3srsa3hlyzj2hy6yncrh")
 		}
 	}
 
